@@ -5,7 +5,7 @@ axios.defaults.withCredentials = true;
 
 function App() {
   useEffect(() => {
-    axios.get('/auth/register');
+    axios.get('/api/v1/auth/register');
   }, []);
   return <div className="">Hello world</div>;
 }

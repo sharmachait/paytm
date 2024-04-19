@@ -1,15 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const UserModel = require('./Models/User');
-const AuthRouter = require('./Routers/AuthRouter');
 dotenv.config();
+const IndexRouter = require('./Routers/IndexRouter');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-const jwtSecret = process.env.JwtSecret;
-const bcryptsalt = bcrypt.genSaltSync(10);
 
 async function startup() {
   try {
@@ -23,7 +18,7 @@ async function startup() {
     );
     app.use(express.json());
     app.use(cookieParser());
-    app.use('/auth', AuthRouter);
+    app.use('/api/v1', IndexRouter);
     const server = app.listen(
       process.env.PORT,
       console.log(`listening on ${process.env.PORT}`)
