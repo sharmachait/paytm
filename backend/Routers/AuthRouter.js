@@ -4,11 +4,14 @@ const AuthRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const zod = require('zod');
+const PublishMessage = require('../Utils/MessageBus');
+
 const jwtSecret = process.env.JwtSecret;
 const bcryptsalt = bcrypt.genSaltSync(10);
 
 async function ConfirmationTokenGenerator() {
-  let randomNumber = Math.floor(Math.random() * 1000000) + 1;
+  let randomNumber = Math.floor(Math.random() * 900000) + 100000;
+  console.log({ randomNumber });
   const recreate = await UserModel.findOne({
     emailConfirmationToken: randomNumber,
   });
@@ -24,16 +27,26 @@ AuthRouter.post('/register', async (req, res) => {
 
     const passwordHash = bcrypt.hashSync(password, bcryptsalt);
 
+    let confirmationToken = await ConfirmationTokenGenerator();
+
     const UserObject = {
       name: name,
       phone: phone,
       passwordHash: passwordHash,
       email: email,
-      emailConfirmationToken: await ConfirmationTokenGenerator(),
+      emailConfirmationToken: confirmationToken,
       emailConfirmationFlag: true,
-    };
 
+      // name: 'name',
+      // phone: '123456789076',
+      // passwordHash: 'passwordHash',
+      // email: 'chait8126@gmail.com',
+      // emailConfirmationToken: confirmationToken,
+      // emailConfirmationFlag: true,
+    };
     let parsedResult = userZodSchema.safeParse(UserObject);
+
+    PublishMessage({ email: 'chait8126@gmail.com', confirmationToken });
 
     if (parsedResult.success) {
       const UserDoc = await UserModel.create(UserObject);
