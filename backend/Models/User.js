@@ -1,34 +1,4 @@
 const mongoose = require('mongoose');
-const zod = require('zod');
-
-const userZodSchema = zod.object({
-  email: zod
-    .string()
-    .trim()
-    .toLowerCase()
-    .email('Not a valid Email')
-    .min(5, 'Email should have atleast 5 characters'),
-  phone: zod.string().min(10).max(15),
-  passwordHash: zod.string().min(6),
-  name: zod
-    .string()
-    .trim()
-    .toLowerCase()
-    .min(3, 'Name too small')
-    .max(30, 'Name too long'),
-  emailConfirmationToken: zod.number().min(100000),
-  emailConfirmationFlag: zod.boolean(),
-});
-
-const loginZodSchema = zod.object({
-  email: zod
-    .string()
-    .trim()
-    .toLowerCase()
-    .email('Not a valid Email')
-    .min(5, 'Email should have atleast 5 characters'),
-  passwordHash: zod.string().min(6),
-});
 
 const UserSchema = new mongoose.Schema(
   {
@@ -83,4 +53,4 @@ const UserSchema = new mongoose.Schema(
 
 const UserModel = new mongoose.model('User', UserSchema);
 
-module.exports = { UserModel, userZodSchema, loginZodSchema };
+module.exports = { UserModel };
