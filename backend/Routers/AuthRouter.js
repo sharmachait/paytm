@@ -70,20 +70,17 @@ AuthRouter.post('/register', async (req, res) => {
 
     let parsedResult = userZodSchema.safeParse(UserObject);
 
-    PublishMessage({ email: 'chait8126@gmail.com', confirmationToken });
+    PublishMessage({ email: email, confirmationToken });
 
     if (parsedResult.success) {
       const UserDoc = await UserModel.create(UserObject);
 
       await AccountModel.create({
         userId: UserDoc._id,
-        balance: 1 + Math.random() * 10000,
+        balance: Math.floor(1 + Math.random() * 10000),
       });
 
-      let token = jwt.sign(
-        { id: UserDoc._id, email: 'chait8126@gmail.com' },
-        jwtSecret
-      );
+      let token = jwt.sign({ id: UserDoc._id, email: email }, jwtSecret);
 
       res.status(201).cookie('token', token).send('User Registered');
     } else {

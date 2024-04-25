@@ -1,10 +1,4 @@
 const nodemailer = require('Nodemailer');
-
-const defaultFrom = {
-  name: 'Paytm',
-  address: process.env.senderemail,
-};
-const defaultTo = 'chait8126@gmail.com';
 function createOptions(from, to, subject, token) {
   return {
     from: from,
@@ -14,8 +8,8 @@ function createOptions(from, to, subject, token) {
   };
 }
 const sendMail = async (
-  from = defaultFrom,
-  to = defaultTo,
+  from,
+  to,
   subject = 'Paytm account verfication',
   token = null
 ) => {

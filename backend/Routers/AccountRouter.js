@@ -6,7 +6,7 @@ AccountRouter = express.Router();
 
 AccountRouter.get('/balance', authMiddleware, async (req, res) => {
   try {
-    const accountDoc = AccountModel.findOne({ userId: req.userId });
+    const accountDoc = await AccountModel.findOne({ userId: req.userId });
     res.status(200).json({ balance: accountDoc.balance });
   } catch (e) {
     console.log(e);
@@ -41,19 +41,13 @@ AccountRouter.post('/transfer', authMiddleware, async (req, res) => {
       });
     }
 
-    const updateAmountSender = { balance: senderAccount.balance - amount };
-    const updateAmountReceiver = {
-      balance: receiverAccount.balance + amount,
-    };
-
     await AccountModel.updateOne(
-      { userId: senderAccount._id },
-      updateAmountSender
+      { userId: req.userId },
+      { $inc: { balance: -parseInt(amount) } }
     ).session(session);
-
     await AccountModel.updateOne(
-      { userId: receiverAccount._id },
-      updateAmountReceiver
+      { userId: to },
+      { $inc: { balance: parseInt(amount) } }
     ).session(session);
 
     // Commit the transaction
@@ -84,7 +78,6 @@ AccountRouter.post('/transfer', authMiddleware, async (req, res) => {
 //             message: "Insufficient balance"
 //         });
 //     }
-//
 //     const toAccount = await Account.findOne({ userId: to }).session(session);
 //
 //     if (!toAccount) {
@@ -95,8 +88,7 @@ AccountRouter.post('/transfer', authMiddleware, async (req, res) => {
 //     }
 //
 //     // Perform the transfer
-//     await Account.updateOne({ userId: req.userId }, { $inc: { balance: -amount } }).session(session);
-//     await Account.updateOne({ userId: to }, { $inc: { balance: amount } }).session(session);
+
 //
 //     // Commit the transaction
 //     await session.commitTransaction();
